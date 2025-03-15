@@ -218,7 +218,7 @@ class BasicOpsSpecification extends CompilerTestingCommons
     )
 
     test("executeFromSelfReg", customEnv, customExt,
-      "executeFromSelfReg[SigmaProp](4, getVar[SigmaProp](defaultVal))",
+      "executeFromSelfReg[SigmaProp](4, getVar[SigmaProp](defaultVal).get)",
       null,
       true,
       additionalRegistersOpt = Some(Map(
@@ -241,7 +241,7 @@ class BasicOpsSpecification extends CompilerTestingCommons
     )    
 
     test("executeFromSelfReg", customEnv, customExt,
-      "{val ba = executeFromSelfReg[Coll[Byte]](4, getVar[Coll[Byte]](defaultVal)); ba.size == 2 }",
+      "{val ba = executeFromSelfReg[Coll[Byte]](4, getVar[Coll[Byte]](defaultVal).get); ba.size == 2 }",
       null,
       true,
       additionalRegistersOpt = Some(Map(
@@ -255,7 +255,7 @@ class BasicOpsSpecification extends CompilerTestingCommons
     val scriptBytes = ValueSerializer.serialize(bytes)
 
     test("executeFromSelfReg", env, ext,
-      "{ executeFromSelfReg[Int](4, getVar[Int](1)) == 5 }",
+      "{ executeFromSelfReg[Int](4, getVar[Int](1).get) == 5 }",
       null,
       true,
       additionalRegistersOpt = Some(Map(
@@ -264,10 +264,29 @@ class BasicOpsSpecification extends CompilerTestingCommons
     )
   }
 
+  property("executeFromSelfReg - using invalid register id") {
+    val bytes = IntConstant(3)
+    val scriptBytes = ValueSerializer.serialize(bytes)
+    assertExceptionThrown(
+      test("executeFromSelfReg", env, ext,
+        "{ executeFromSelfReg[Int](40, getVar[Int](1).get) == 3 }",
+        null,
+        true,
+        additionalRegistersOpt = Some(Map(
+          reg1 -> ByteArrayConstant(scriptBytes)
+        ))
+      ),
+      e => {
+        val r = rootCause(e)
+        r.isInstanceOf[InterpreterException] && r.getMessage == "Script reduced to false"
+      }
+    )
+  }
+
   property("executeFromSelfReg - ScriptReduction") {
     assertExceptionThrown(
       test("executeFromSelfReg", env, ext,
-        "{ executeFromSelfReg[Int](4, getVar[Int](1)) == 2 }",
+        "{ executeFromSelfReg[Int](4, getVar[Int](1).get) == 2 }",
         null,
         true,
         additionalRegistersOpt = Some(Map())
@@ -281,7 +300,7 @@ class BasicOpsSpecification extends CompilerTestingCommons
 
   property("executeFromSelfReg - ForceDefault") {
     test("executeFromSelfReg", env, ext,
-      "{ executeFromSelfReg[Int](4, getVar[Int](2)) == 2 }",
+      "{ executeFromSelfReg[Int](4, getVar[Int](2).get) == 2 }",
       null,
       true,
       additionalRegistersOpt = Some(Map())
@@ -290,7 +309,7 @@ class BasicOpsSpecification extends CompilerTestingCommons
 
   property("executeFromSelfReg - InvalidRegister") {
     test("executeFromSelfReg", env, ext,
-      "{ executeFromSelfReg[Int](99, getVar[Int](2)) == 2 }",
+      "{ executeFromSelfReg[Int](99, getVar[Int](2).get) == 2 }",
       null,
       true,
       additionalRegistersOpt = Some(Map())

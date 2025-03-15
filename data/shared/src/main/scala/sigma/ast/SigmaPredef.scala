@@ -387,22 +387,16 @@ object SigmaPredef {
     val ExecuteFromSelfRegFunc = PredefinedFunc("executeFromSelfReg",
       Lambda(
         Seq(paramT),
-        Array("id" -> SInt, "default" -> SOption(tT)),
+        Array("id" -> SInt, "default" -> tT),
         tT, None
       ),
       PredefFuncInfo(
         { case (Ident(_, SFunc(_, rtpe, _)), Seq(id: Constant[SNumericType]@unchecked, default)) =>
           val idx: Int = SInt.downcast((id.value.asInstanceOf[AnyVal]))
           if (idx < 0 || idx >= org.ergoplatform.ErgoBox.allRegisters.length) {
-            default.v.asOption[rtpe.type].get
+            default.v
           } else {
-            val defVal = Some(default.tpe match {
-              case _: SOption[rtpe.type] =>
-                default.v.asOption[rtpe.type].get
-              case _ =>
-                default.asValue[rtpe.type]
-            })
-
+            val defVal = Some(default.asValue[rtpe.type])
             val r: RegisterId = org.ergoplatform.ErgoBox.registerByIndex(idx)
             mkDeserializeRegister[rtpe.type](r, rtpe, defVal)
           }
