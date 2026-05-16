@@ -354,12 +354,6 @@ class Context {
     */
   def getVarFromInput[T](inputIndex: Short, id: Byte): Option[T]
 
-  /** Returns new $coll with elements in reversed order.
-    *
-    *  @return A new $coll with all elements of this $coll in reversed order.
-    */
-  def reverse: Coll[T]
- 
 }
 
 /** Represents data of the block headers available in scripts. */
@@ -984,8 +978,13 @@ class Coll[A] {
     *         E.g. [1,2,3] ends with [2,3]
     */
   def endsWith(ys: Coll[A]): Boolean
-  
-  
+
+  /** Returns a new collection with the elements of this collection in reversed order.
+    *
+    *  @return a new collection with all elements of this collection in reversed order.
+    */
+  def reverse: Coll[A]
+
 }
 ```
 
@@ -1136,6 +1135,23 @@ def longToByteArray(input: Long): Coll[Byte]
   * org.bouncycastle.math.ec.ECCurve.decodePoint())
   */
 def decodePoint(bytes: Coll[Byte]): GroupElement 
+
+/** Constructs an authenticated dictionary (AVL+ tree) with the given parameters and
+  * root digest. The resulting AvlTree is immutable; use its methods to verify proofs
+  * of insertion, update, lookup and removal operations.
+  *
+  * @param operationFlags  bitmask of operations the tree allows (insert/update/remove)
+  * @param digest          hash of the merkle tree root
+  * @param keyLength       length of dictionary keys in bytes
+  * @param valueLengthOpt  optional fixed width of dictionary values in bytes;
+  *                        `None` means variable-width values
+  */
+def avlTree(
+  operationFlags: Byte,
+  digest: Coll[Byte],
+  keyLength: Int,
+  valueLengthOpt: Option[Int]
+): AvlTree
 
 
 /** Extracts Context variable from SELF input by id and type.
