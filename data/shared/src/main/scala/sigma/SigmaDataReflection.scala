@@ -2,6 +2,7 @@ package sigma
 
 import org.ergoplatform.ErgoBox.RegisterId
 import sigma.ast.SCollection.{SBooleanArray, SByteArray, SIntArray}
+import sigma.ast.SOption.SIntOption
 import sigma.ast._
 import sigma.ast.syntax._
 import sigma.data.KeyValueColl
@@ -114,6 +115,17 @@ object SigmaDataReflection {
     constructors = Array(
       mkConstructor(Array(classOf[Value[_]])) { args =>
         new CalcSha256(args(0).asInstanceOf[Value[SByteArray]])
+      }
+    )
+  )
+
+  registerClassEntry(classOf[CreateAvlTree],
+    constructors = Array(
+      mkConstructor(Array(classOf[Value[_]], classOf[Value[_]], classOf[Value[_]], classOf[Value[_]])) { args =>
+        new CreateAvlTree(args(0).asInstanceOf[ByteValue],
+          args(1).asInstanceOf[Value[SByteArray]],
+          args(2).asInstanceOf[IntValue],
+          args(3).asInstanceOf[Value[SIntOption]])
       }
     )
   )

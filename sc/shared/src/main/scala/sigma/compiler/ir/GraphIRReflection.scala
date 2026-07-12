@@ -587,6 +587,12 @@ object GraphIRReflection {
         mkMethod(clazz, "decodePoint", Array[Class[_]](classOf[Base#Ref[_]])) { (obj, args) =>
           obj.asInstanceOf[ctx.SigmaDslBuilder].decodePoint(args(0).asInstanceOf[ctx.Ref[ctx.Coll[Byte]]])
         },
+        mkMethod(clazz, "avlTree", Array[Class[_]](classOf[Base#Ref[_]], classOf[Base#Ref[_]],
+          classOf[Base#Ref[_]], classOf[Base#Ref[_]])) { (obj, args) =>
+          obj.asInstanceOf[ctx.SigmaDslBuilder].avlTree(args(0).asInstanceOf[ctx.Ref[Byte]],
+            args(1).asInstanceOf[ctx.Ref[ctx.Coll[Byte]]], args(2).asInstanceOf[ctx.Ref[Int]],
+            args(3).asInstanceOf[ctx.Ref[ctx.WOption[Int]]])
+        },
         mkMethod(clazz, "serialize", Array[Class[_]](classOf[Base#Ref[_]])) { (obj, args) =>
           obj.asInstanceOf[ctx.SigmaDslBuilder].serialize(args(0).asInstanceOf[ctx.Ref[Any]])
         },
